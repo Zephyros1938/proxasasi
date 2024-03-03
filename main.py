@@ -53,7 +53,7 @@ def reconstruct_list_to_string(LIST):
     return TEMPSTRING
 
 
-def remove_and_count_repeated_substring(s, substring):
+def remove_repeated_substring_rl(s, substring):
     count = 0
     countofsub = len(s)/ len(substring)
 
@@ -63,6 +63,20 @@ def remove_and_count_repeated_substring(s, substring):
     print(len(substring))"""
     while substring in s and count < countofsub - 1:
         index = s.rfind(substring)  # Find the last occurrence of the substring
+        s = s[:index] + s[index + len(substring):]  # Remove the last occurrence
+        count += 1
+    return s
+
+def remove_repeated_substring_lr(s, substring):
+    count = 0
+    countofsub = len(s)/ len(substring)
+
+    """print(countofsub)
+    print(len(s)/ len(substring))
+    print(len(s))
+    print(len(substring))"""
+    while substring in s and count < countofsub - 1:
+        index = s.find(substring)  # Find the last occurrence of the substring
         s = s[:index] + s[index + len(substring):]  # Remove the last occurrence
         count += 1
     return s
@@ -105,16 +119,21 @@ def modify_html_content(content, full_url, method, url):
                 #print(original_url)
                 #print('/' == original_url)
                 #print('\n\n')
-                proxied_url = f'http://127.0.0.1:5000/{method}/{url}{original_url}'
+                proxied_url = f'http://127.0.0.1:5000/{method}/{url.split('/')[0]}/{original_url}'
                 for X in range(len(['//','///','////'])):
                     proxied_url.replace(['//','///','////'][X], '/')
-                #print("Original URL:", original_url)
-                #print("Proxied URL:", proxied_url)
+                print("URL:", url)
+                print("URL Split:", url.split('/'))
+                print("Original URL:", original_url)
+                print("Original URL Split:", original_url.split('/'))
+                print("Proxied URL:", proxied_url)
 
+                #print(proxied_url)
+                proxied_url = remove_repeated_substring_rl(proxied_url, '127.0.0.1:5000/')
+                proxied_url = remove_repeated_substring_lr(proxied_url, f'/{url.split('/')[0]}/')
+                proxied_url = remove_repeated_substring_rl(proxied_url, 'http://')
                 print(proxied_url)
-                proxied_url = remove_and_count_repeated_substring(proxied_url, '127.0.0.1:5000/')
-                print(proxied_url)
-                print('\n\n')
+                print('\n')
 
                 tag[attr] = proxied_url
                 # print("Current URL:", tag[attr], "\n")
@@ -130,17 +149,11 @@ def modify_html_content(content, full_url, method, url):
                     original_url = original_url[7:]
                 elif original_url.startswith("https://"):
                     original_url = original_url[8:]
-                proxied_url = f'http://127.0.0.1:5000/{method}/{url}{original_url}'
+                proxied_url = f'http://127.0.0.1:5000/{method}/{original_url}'
                 # print("Original URL:", original_url)
                 # print("Proxied URL:", proxied_url)
-                #proxied_url = proxied_url.replace('/http:/127.0.0.1:5000', '').replace('/https:/127.0.0.1:5000', '').replace('http:/127.0.0.1:5000', '').replace('https:/127.0.0.1:5000', '').replace('/127.0.0.1:5000', '')
-                proxied_url = remove_and_count_repeated_substring(proxied_url, original_url)
-                for X in range(len(['//','///','////'])):
-                    proxied_url = proxied_url.replace(['//','///','////'][X], '/')
-
-                #print(proxied_url)
-                proxied_url = remove_and_count_repeated_substring(proxied_url, '127.0.0.1:5000/')
-                #print(proxied_url)
+                #proxied_url = remove_repeated_substring_rl(proxied_url, '127.0.0.1:5000/')
+                proxied_url = remove_repeated_substring_lr(proxied_url, f'/{url.split('/')[0]}/')
 
                 tag[attr] = proxied_url
 
@@ -224,4 +237,5 @@ def proxy(url, method):
 
 
 if __name__ == '__main__':
+    os.system('cls' if os.name == 'nt' else 'clear')
     app.run(debug=True, host='127.0.0.1', port=5000)
