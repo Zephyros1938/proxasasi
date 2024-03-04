@@ -2,6 +2,7 @@ import os
 
 import flask
 import requests
+import base64
 from flask import Flask, request, send_from_directory
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
@@ -58,7 +59,7 @@ def modify_html_content(content, full_url, method, url):
     # print("Method:", method)
     # print("Base URL:", url)
 
-    soup = BeautifulSoup(content, 'html.parser')
+    soup = BeautifulSoup(content)
 
     # Convert relative URLs starting with '/' to proxied URLs
     for tag in soup.find_all():
@@ -72,6 +73,7 @@ def modify_html_content(content, full_url, method, url):
                 tag[attr] = proxied_url
                 # print("Current URL:", tag[attr], "\n")
                 #remove_occurences_in_string(tag[attr], '127.0.0.1:5000', '/', 2)
+
 
     # Convert URLs starting with http:// or https:// to proxied URLs
     for tag in soup.find_all():
@@ -88,6 +90,7 @@ def modify_html_content(content, full_url, method, url):
                 tag[attr] = proxied_url.replace('http:/127.0.0.1:5000', '').replace('https:/127.0.0.1:5000', '')
                 # print("Current URL:", tag[attr], "\n")
 
+
     # print("Modification completed.")
     return str(soup)
 
@@ -97,7 +100,7 @@ app = Flask(__name__)
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(directory=os.path.join(app.root_path, 'static'), path='favicon.ico', max_age=None)
+    return send_from_directory(directory=os.path.join(app.root_path, 'static'), path='favicon.ico', max_age=0)
 
 
 @app.route('/')
@@ -140,7 +143,14 @@ def proxy(url, method):
                 # print("Failed to fetch favicon.ico:", favicon_load.status_code)
                 pass
 
-            modified_content = modify_html_content(response.content.decode('utf-8', errors='ignore'), full_url, method, url)
+            print(response.encoding)
+            if str(response.encoding) in ['UTF-8', 'utf-8', 'utf8', 'UTF8']:
+                modified_content = modify_html_content(response.content.decode('utf-8', errors='ignore'), full_url, method, url)
+            elif str(response.encoding) in ['ISO-8859-1', 'None']:
+                modified_content = modify_html_content(response.content.decode('ISO-8859-1', errors='ignore'), full_url, method, url)
+            else:
+                modified_content = modify_html_content(response.content, full_url, method, url)
+
             # print(modified_content)
             return modified_content
         except requests.exceptions.RequestException as e:
