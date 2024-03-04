@@ -89,10 +89,14 @@ def modify_html_content(content, full_url, method, url):
                 proxied_url = f'http://127.0.0.1:5000/{method}/{original_url}'
                 # print("Original URL:", original_url)
                 # print("Proxied URL:", proxied_url)
-                proxied_url.replace('http:/127.0.0.1:5000', '').replace('https:/127.0.0.1:5000', '')
+                proxied_url = proxied_url.replace('/http:/127.0.0.1:5000', '').replace('/https:/127.0.0.1:5000', '').replace('http:/127.0.0.1:5000', '').replace('https:/127.0.0.1:5000', '').replace('/127.0.0.1:5000', '')
                 for X in range(len(['//','///','////'])):
-                    proxied_url.replace(['//','///','////'][X], '/')
+                    proxied_url = proxied_url.replace(['//','///','////'][X], '/')
                 tag[attr] = proxied_url
+
+                if ".css" in proxied_url:
+                    print(proxied_url)
+
 
                 # print("Current URL:", tag[attr], "\n")
 
@@ -149,7 +153,7 @@ def proxy(url, method):
                 # print("Failed to fetch favicon.ico:", favicon_load.status_code)
                 pass
 
-            print(response.encoding)
+            #print(response.encoding)
             if str(response.encoding) in ['UTF-8', 'utf-8', 'utf8', 'UTF8']:
                 modified_content = modify_html_content(response.content.decode('utf-8', errors='ignore'), full_url, method, url)
             elif str(response.encoding) in ['ISO-8859-1', 'None']:
