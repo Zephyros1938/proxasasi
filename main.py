@@ -87,7 +87,11 @@ def modify_html_content(content, full_url, method, url):
                 proxied_url = f'http://127.0.0.1:5000/{method}/{original_url}'
                 # print("Original URL:", original_url)
                 # print("Proxied URL:", proxied_url)
-                tag[attr] = proxied_url.replace('http:/127.0.0.1:5000', '').replace('https:/127.0.0.1:5000', '')
+                proxied_url.replace('http:/127.0.0.1:5000', '').replace('https:/127.0.0.1:5000', '')
+                for X in range(len(['//','///','////'])):
+                    proxied_url.replace(['//','///','////'][X], '/')
+                tag[attr] = proxied_url
+
                 # print("Current URL:", tag[attr], "\n")
 
 
