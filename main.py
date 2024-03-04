@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 
 PORTNUMB = 80
-ADDRNUMB = '45.25.249.174'
+ADDRNUMB = '127.0.0.1'
 
 COMBINEPORTADDR = str(ADDRNUMB + ":" + str(PORTNUMB))
 
