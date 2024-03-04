@@ -129,7 +129,7 @@ def proxy(url, method):
                 favicon_url = f'{method}//' + url.split('/')[2] + "//favicon.ico"
             else:
                 favicon_url = f'{method}//' + url.split('/')[0] + "//favicon.ico"
-            print(favicon_url)
+            #print(favicon_url)
             #print( url.split('/'))
             favicon_load = requests.request(method='http', url=favicon_url)
             # print("URL for favicon:", f'{method}//{url}/favicon.ico')
