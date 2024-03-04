@@ -65,8 +65,8 @@ def modify_html_content(content, full_url, method, url):
         for attr in tag.attrs:
             if isinstance(tag[attr], str) and tag[attr].startswith('/') and not tag[attr].startswith('127.0.0.1:5000/'):
                 original_url = tag[attr]
-                #print(url.split('/'))
-                proxied_url = f'http://127.0.0.1:5000/{method}/{url.split('/')[0]}{original_url}'
+                #print(url.split('/')[0])
+                proxied_url = f'http://127.0.0.1:5000/{method}/{url.split('/')[0]}/{original_url}'
                 # print("Original URL:", original_url)
                 # print("Proxied URL:", proxied_url)
                 tag[attr] = proxied_url
@@ -129,9 +129,9 @@ def proxy(url, method):
                 favicon_url = f'{method}//' + url.split('/')[2] + "//favicon.ico"
             else:
                 favicon_url = f'{method}//' + url.split('/')[0] + "//favicon.ico"
-            #print(favicon_url)
+            print(favicon_url)
             #print( url.split('/'))
-            favicon_load = requests.request(method=request.method, url=favicon_url)
+            favicon_load = requests.request(method='http', url=favicon_url)
             # print("URL for favicon:", f'{method}//{url}/favicon.ico')
             if favicon_load.status_code == 200:
                 # print("Favicon content received:")
