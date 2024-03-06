@@ -19,16 +19,17 @@ The `modify_html_content` function is responsible for parsing and modifying the 
 
 1. Clone the repository:
 
-git clone <repository_url>
-cd Proxa
+`git clone <repository_url>`
+
+`cd Proxa`
 
 2. Install the required dependencies using pip:
 
-pip install -r requirements.txt
+`pip install -r requirements.txt`
 
 3. Run the Proxa server:
 
-python main.py
+`python main.py`
 
 
 The server will start running on `http://127.0.0.1:5000` by default.
