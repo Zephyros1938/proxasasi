@@ -44,10 +44,12 @@ The server will start running on `http://127.0.0.1:5000` by default.
 
 ## Requirements
 
-- Python 3.x
+- Python >= 3.12
 - Flask
 - BeautifulSoup
 - Requests
+- Base64
+- OS
 
 ## License
 
