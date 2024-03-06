@@ -17,6 +17,8 @@ The `modify_html_content` function is responsible for parsing and modifying the 
 
 ## Installation
 
+`#FF0000` YOU WILL NEED PYTHON-3.12 OR PROXA WILL NOT WORK.
+
 1. Clone the repository:
 
 `git clone https://github.com/Xtrau505/proxasasi.git`
