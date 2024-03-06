@@ -19,7 +19,7 @@ The `modify_html_content` function is responsible for parsing and modifying the 
 
 1. Clone the repository:
 
-`git clone [https://github.com/Xtrau505/proxasasi.git](https://github.com/Xtrau505/proxasasi.git)`
+`git clone https://github.com/Xtrau505/proxasasi.git`
 
 `cd Proxa`
 
