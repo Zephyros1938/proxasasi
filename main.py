@@ -63,9 +63,10 @@ def modify_html_content(content, full_url, method, url):
     # Convert relative URLs starting with '/' to proxied URLs
     for tag in soup.find_all():
         for attr in tag.attrs:
-            if isinstance(tag[attr], str) and tag[attr].startswith('/'):
+            if isinstance(tag[attr], str) and tag[attr].startswith('/') and not tag[attr].startswith('127.0.0.1:5000/'):
                 original_url = tag[attr]
-                proxied_url = f'http://127.0.0.1:5000/{method}/{url}{original_url}'
+                print(url.split('/'))
+                proxied_url = f'http://127.0.0.1:5000/{method}/{url.split('/')[0]}{original_url}'
                 # print("Original URL:", original_url)
                 # print("Proxied URL:", proxied_url)
                 tag[attr] = proxied_url
@@ -75,9 +76,7 @@ def modify_html_content(content, full_url, method, url):
     # Convert URLs starting with http:// or https:// to proxied URLs
     for tag in soup.find_all():
         for attr in tag.attrs:
-            if isinstance(tag[attr], str) and (
-                    tag[attr].startswith('http://') or tag[attr].startswith('https://') and not tag[attr].startswith(
-                '127.0.0.1:5000/http://')):
+            if isinstance(tag[attr], str) and (tag[attr].startswith('http://') or tag[attr].startswith('https://')):
                 original_url = tag[attr]
                 if original_url.startswith("http://"):
                     original_url = original_url[7:]
@@ -86,9 +85,8 @@ def modify_html_content(content, full_url, method, url):
                 proxied_url = f'http://127.0.0.1:5000/{method}/{original_url}'
                 # print("Original URL:", original_url)
                 # print("Proxied URL:", proxied_url)
-                tag[attr] = proxied_url
+                tag[attr] = proxied_url.replace('http:/127.0.0.1:5000', '').replace('https:/127.0.0.1:5000', '')
                 # print("Current URL:", tag[attr], "\n")
-                #remove_occurences_in_string(tag[attr], '127.0.0.1:5000', '127.0.0.1:5000', 2)
 
     # print("Modification completed.")
     return str(soup)
@@ -132,7 +130,7 @@ def proxy(url, method):
             else:
                 favicon_url = f'{method}//' + url.split('/')[0] + "//favicon.ico"
             #print(favicon_url)
-            # print( url.split('/'))
+            #print( url.split('/'))
             favicon_load = requests.request(method=request.method, url=favicon_url)
             # print("URL for favicon:", f'{method}//{url}/favicon.ico')
             if favicon_load.status_code == 200:
