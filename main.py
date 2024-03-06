@@ -33,11 +33,11 @@ def remove_occurences_in_list(LIST: list, STRING: str, WHERETOREMOVE: int):
 
 def remove_occurences_in_string(STRING: str, WHATTOREMOVE: str, SPLIT: str, WHERETOREMOVE: int):
     LIST = STRING.split(SPLIT)
-    print(LIST)
+    #print(LIST)
     remove_occurences_in_list(LIST, WHATTOREMOVE, WHERETOREMOVE)
-    print(LIST)
+    #print(LIST)
     RETURNTHIS = reconstruct_list_to_string(LIST)
-    print(RETURNTHIS)
+    #print(RETURNTHIS)
     return RETURNTHIS
 
 
@@ -65,7 +65,7 @@ def modify_html_content(content, full_url, method, url):
         for attr in tag.attrs:
             if isinstance(tag[attr], str) and tag[attr].startswith('/') and not tag[attr].startswith('127.0.0.1:5000/'):
                 original_url = tag[attr]
-                print(url.split('/'))
+                #print(url.split('/'))
                 proxied_url = f'http://127.0.0.1:5000/{method}/{url.split('/')[0]}{original_url}'
                 # print("Original URL:", original_url)
                 # print("Proxied URL:", proxied_url)
