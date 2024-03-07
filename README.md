@@ -34,7 +34,7 @@ The `modify_html_content` function is responsible for parsing and modifying the 
 `python main.py`
 
 
-The server will start running on `http://127.0.0.1:5000` by default.
+The serv[venv](venv)er will start running on `http://127.0.0.1:5000` by default.
 
 ## Usage
 

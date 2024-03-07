@@ -101,19 +101,20 @@ def modify_html_content(content, full_url, method, url):
         for attr in tag.attrs:
             if isinstance(tag[attr], str) and tag[attr].startswith('/') and not tag[attr].startswith('127.0.0.1:5000/'):
                 original_url = tag[attr]
-                print(url.split('/')[0])
-                print(original_url)
-                print('/' == original_url)
-                print('\n\n')
-                proxied_url = f'http://127.0.0.1:5000/{method}/{original_url}'
+                #print(url.split('/')[0])
+                #print(original_url)
+                #print('/' == original_url)
+                #print('\n\n')
+                proxied_url = f'http://127.0.0.1:5000/{method}/{url}{original_url}'
                 for X in range(len(['//','///','////'])):
                     proxied_url.replace(['//','///','////'][X], '/')
                 #print("Original URL:", original_url)
                 #print("Proxied URL:", proxied_url)
 
                 print(proxied_url)
-                remove_and_count_repeated_substring(proxied_url, url)
+                proxied_url = remove_and_count_repeated_substring(proxied_url, '127.0.0.1:5000/')
                 print(proxied_url)
+                print('\n\n')
 
                 tag[attr] = proxied_url
                 # print("Current URL:", tag[attr], "\n")
@@ -129,21 +130,22 @@ def modify_html_content(content, full_url, method, url):
                     original_url = original_url[7:]
                 elif original_url.startswith("https://"):
                     original_url = original_url[8:]
-                proxied_url = f'http://127.0.0.1:5000/{method}/{original_url}'
+                proxied_url = f'http://127.0.0.1:5000/{method}/{url}{original_url}'
                 # print("Original URL:", original_url)
                 # print("Proxied URL:", proxied_url)
-                proxied_url = proxied_url.replace('/http:/127.0.0.1:5000', '').replace('/https:/127.0.0.1:5000', '').replace('http:/127.0.0.1:5000', '').replace('https:/127.0.0.1:5000', '').replace('/127.0.0.1:5000', '')
+                #proxied_url = proxied_url.replace('/http:/127.0.0.1:5000', '').replace('/https:/127.0.0.1:5000', '').replace('http:/127.0.0.1:5000', '').replace('https:/127.0.0.1:5000', '').replace('/127.0.0.1:5000', '')
+                proxied_url = remove_and_count_repeated_substring(proxied_url, original_url)
                 for X in range(len(['//','///','////'])):
                     proxied_url = proxied_url.replace(['//','///','////'][X], '/')
 
-                print(proxied_url)
-                remove_and_count_repeated_substring(proxied_url, url)
-                print(proxied_url)
+                #print(proxied_url)
+                proxied_url = remove_and_count_repeated_substring(proxied_url, '127.0.0.1:5000/')
+                #print(proxied_url)
 
                 tag[attr] = proxied_url
 
-                if ".css" in proxied_url:
-                    print(proxied_url)
+                """if ".css" in proxied_url:
+                    print(proxied_url)"""
 
 
                 # print("Current URL:", tag[attr], "\n")
