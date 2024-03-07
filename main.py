@@ -1,5 +1,5 @@
 import os
-
+import json
 import flask
 import requests
 import base64
@@ -11,6 +11,22 @@ PORTNUMB = 80
 ADDRNUMB = '127.0.0.1'
 
 COMBINEPORTADDR = str(ADDRNUMB + ":" + str(PORTNUMB))
+
+def clear_json(FILES:list):
+    for i in range(len(FILES)):
+        FILE = open(FILES[i], 'w')
+        FILE.write('')
+        FILE.close()
+        print(f"CLEARED JSON FILE : {FILE.name}")
+
+def append_json(FILE, DICT:dict):
+    JSONOBJ = json.dumps(DICT, indent=4, sort_keys=True, separators=(',', ':'))
+    with open(FILE, '+a') as JSONFILE:
+        JSONFILE.write(f'{JSONOBJ}'[:-1][1:]+',')
+        #JSONFILE.write('}')
+        JSONFILE.close()
+
+
 
 
 def write_favicon(data_to_write):
@@ -115,13 +131,14 @@ def modify_html_content(content, full_url, method, url):
         for attr in tag.attrs:
             if isinstance(tag[attr], str) and tag[attr].startswith('/') and not tag[attr].startswith('127.0.0.1:5000/'):
                 original_url = tag[attr]
-                #print(url.split('/')[0])
-                #print(original_url)
-                #print('/' == original_url)
-                #print('\n\n')
-                proxied_url = f'http://127.0.0.1:5000/{method}/{url.split('/')[0]}/{original_url}'
+                if original_url.startswith("http:/"):
+                    original_url = original_url[6:]
+                elif original_url.startswith("https:/"):
+                    original_url = original_url[7:]
+                proxied_url = f'http://127.0.0.1:5000/{method}/{url}/{original_url}'
                 for X in range(len(['//','///','////'])):
                     proxied_url.replace(['//','///','////'][X], '/')
+                print('----- URLS STARTING WITH "/" -----\n')
                 print("URL:", url)
                 print("URL Split:", url.split('/'))
                 print("Original URL:", original_url)
@@ -130,9 +147,12 @@ def modify_html_content(content, full_url, method, url):
 
 
                 #print(proxied_url)
-                proxied_url = remove_repeated_substring_rl(proxied_url, '127.0.0.1:5000/')
-                proxied_url = remove_repeated_substring_lr(proxied_url, f'/{url.split('/')[0]}/')
-                proxied_url = remove_repeated_substring_rl(proxied_url, 'http://')
+                proxied_url = remove_repeated_substring_lr(proxied_url, '127.0.0.1:5000/')
+                #proxied_url = remove_repeated_substring_lr(proxied_url, f'http:/{url.split('/')[0]}/')
+                #proxied_url = proxied_url.replace('https://', '127.0.0.1:5000/http:/')
+                for i in range(5):
+                    proxied_url = proxied_url.replace('//', '/')
+                #proxied_url = remove_repeated_substring_rl(proxied_url, 'http://')
                 print(proxied_url)
                 print('\n')
 
@@ -140,26 +160,52 @@ def modify_html_content(content, full_url, method, url):
                 # print("Current URL:", tag[attr], "\n")
                 #remove_occurences_in_string(tag[attr], '127.0.0.1:5000', '/', 2)
 
+                URLDICTATE = {str(tag[attr]): {
+                    "URL": url,
+                    "URL Split": url.split('/'),
+                    "Original URL": original_url,
+                    "Original URL Split": original_url.split('/'),
+                    "Proxied URL": proxied_url,
+                    "Proxied URL Split": proxied_url.split('/')
+                }
+                }
 
-    # Convert URLs starting with http:// or https:// to proxied URLs
-    for tag in soup.find_all():
-        for attr in tag.attrs:
-            if isinstance(tag[attr], str) and (tag[attr].startswith('http://') or tag[attr].startswith('https://')):
+                append_json('URLSLASH.json', URLDICTATE)
+            """# Convert URLs starting with http:// or https:// to proxied URLs
+                for tag in soup.find_all():
+                for attr in tag.attrs:"""
+            if isinstance(tag[attr], str) and (tag[attr].startswith('http://') or tag[attr].startswith('https://')) and not tag[attr].startswith('127.0.0.1'):
                 original_url = tag[attr]
-                if original_url.startswith("http://"):
+                if original_url.startswith("http:/"):
+                    original_url = original_url[6:]
+                elif original_url.startswith("https:/"):
                     original_url = original_url[7:]
-                elif original_url.startswith("https://"):
-                    original_url = original_url[8:]
-                proxied_url = f'http://127.0.0.1:5000/{method}/{original_url}'
-                # print("Original URL:", original_url)
-                # print("Proxied URL:", proxied_url)
-                #proxied_url = remove_repeated_substring_rl(proxied_url, '127.0.0.1:5000/')
-                proxied_url = remove_repeated_substring_lr(proxied_url, f'/{url.split('/')[0]}/')
+                proxied_url = f'http://127.0.0.1:5000/{method}/{url.split('/')[0]}/{original_url}'
+
+
+                #print('----- URLS STARTING WITH "http" -----\n')
+                #print("URL:", url)
+                #print("URL Split:", url.split('/'))
+                #print("Original URL:", original_url)
+                #print("Original URL Split:", original_url.split('/'))
+                #print("Proxied URL:", proxied_url)
+                proxied_url = remove_repeated_substring_rl(proxied_url, f'//{url.split('/')[0]}')
+
+                #proxied_url= proxied_url.replace(f'//http:/{url.split('/')[0]}/', '')
 
                 tag[attr] = proxied_url
 
-                """if ".css" in proxied_url:
-                    print(proxied_url)"""
+                URLDICTATE = {str(tag[attr]): {
+                    "URL": url,
+                    "URL Split": url.split('/'),
+                    "Original URL": original_url,
+                    "Original URL Split": original_url.split('/'),
+                    "Proxied URL": proxied_url,
+                    "Proxied URL Split": proxied_url.split('/')
+                    }
+                }
+
+                append_json('URLHTTP.json', URLDICTATE)
 
 
                 # print("Current URL:", tag[attr], "\n")
@@ -201,7 +247,7 @@ def proxy(url, method):
     """if request.method == 'GET':"""
     if True:
         try:
-            response = requests.request(method=request.method, url=full_url)
+            response = requests.request(method=request.method, url=full_url, verify=False)
 
 
 
@@ -236,7 +282,11 @@ def proxy(url, method):
             return str(e), 500
 
 
+jsonFiles = ['URLSLASH.json', 'URLHTTP.json']
+
 
 if __name__ == '__main__':
     os.system('cls' if os.name == 'nt' else 'clear')
+    clear_json(jsonFiles)
+    #append_json('URLSLASH.json', 'a', {'1': '2', '2': '3'})
     app.run(debug=True, host='127.0.0.1', port=5000)
