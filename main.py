@@ -128,6 +128,7 @@ def modify_html_content(content, full_url, method, url):
                 print("Original URL Split:", original_url.split('/'))
                 print("Proxied URL:", proxied_url)
 
+
                 #print(proxied_url)
                 proxied_url = remove_repeated_substring_rl(proxied_url, '127.0.0.1:5000/')
                 proxied_url = remove_repeated_substring_lr(proxied_url, f'/{url.split('/')[0]}/')
