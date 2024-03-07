@@ -53,6 +53,29 @@ def reconstruct_list_to_string(LIST):
     return TEMPSTRING
 
 
+def remove_and_count_repeated_substring(s, substring):
+    count = 0
+    countofsub = len(s)/ len(substring)
+
+    """print(countofsub)
+    print(len(s)/ len(substring))
+    print(len(s))
+    print(len(substring))"""
+    while substring in s and count < countofsub - 1:
+        index = s.rfind(substring)  # Find the last occurrence of the substring
+        s = s[:index] + s[index + len(substring):]  # Remove the last occurrence
+        count += 1
+    return s
+
+"""
+# Example usage:
+s = "abcabcabcabcabc"
+substring = "4412"
+S_WITHOUT_REPEATS = remove_and_count_repeated_substring("abcabcabcabcabc", "abc")
+print("String with repeated substrings removed:", S_WITHOUT_REPEATS)
+"""
+
+
 def modify_html_content(content, full_url, method, url):
     # print("Starting modification of HTML content...")
     # print("Full URL:", full_url)
@@ -61,17 +84,37 @@ def modify_html_content(content, full_url, method, url):
 
     soup = BeautifulSoup(content)
 
+    """if True:
+        # Get the Content-Type header from the response
+        content_type = soup.headers.get('Content-Type')
+
+        # Check if the content type indicates HTML
+        if content_type and 'text/html' in content_type:
+            print("The response contains HTML content.")
+        else:
+            print("The response does not contain HTML content.")"""
+
+
+
     # Convert relative URLs starting with '/' to proxied URLs
     for tag in soup.find_all():
         for attr in tag.attrs:
             if isinstance(tag[attr], str) and tag[attr].startswith('/') and not tag[attr].startswith('127.0.0.1:5000/'):
                 original_url = tag[attr]
-                #print(url.split('/')[0])
-                proxied_url = f'http://127.0.0.1:5000/{method}/{url.split('/')[0]}/{original_url}'
-                # print("Original URL:", original_url)
-                # print("Proxied URL:", proxied_url)
+                print(url.split('/')[0])
+                print(original_url)
+                print('/' == original_url)
+                print('\n\n')
+                proxied_url = f'http://127.0.0.1:5000/{method}/{original_url}'
                 for X in range(len(['//','///','////'])):
                     proxied_url.replace(['//','///','////'][X], '/')
+                #print("Original URL:", original_url)
+                #print("Proxied URL:", proxied_url)
+
+                print(proxied_url)
+                remove_and_count_repeated_substring(proxied_url, url)
+                print(proxied_url)
+
                 tag[attr] = proxied_url
                 # print("Current URL:", tag[attr], "\n")
                 #remove_occurences_in_string(tag[attr], '127.0.0.1:5000', '/', 2)
@@ -92,6 +135,11 @@ def modify_html_content(content, full_url, method, url):
                 proxied_url = proxied_url.replace('/http:/127.0.0.1:5000', '').replace('/https:/127.0.0.1:5000', '').replace('http:/127.0.0.1:5000', '').replace('https:/127.0.0.1:5000', '').replace('/127.0.0.1:5000', '')
                 for X in range(len(['//','///','////'])):
                     proxied_url = proxied_url.replace(['//','///','////'][X], '/')
+
+                print(proxied_url)
+                remove_and_count_repeated_substring(proxied_url, url)
+                print(proxied_url)
+
                 tag[attr] = proxied_url
 
                 if ".css" in proxied_url:
@@ -138,6 +186,11 @@ def proxy(url, method):
     if True:
         try:
             response = requests.request(method=request.method, url=full_url)
+
+
+
+
+
             if url.split('/')[0] == "127.0.0.1:5000":
                 favicon_url = f'{method}//' + url.split('/')[2] + "//favicon.ico"
             else:
